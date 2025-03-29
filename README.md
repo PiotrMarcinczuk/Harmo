@@ -39,6 +39,10 @@ Użytkownicy mogą z wielu miejsc aplikacji przejść do widoku przedstawiające
 ![logowanie_rej](https://github.com/user-attachments/assets/b4feff14-cd56-4d11-8540-79fdc2f57776)
 Pierwszy widok aplikacji umożliwiający zalogowanie się lub rejestrację.
 
+![image](https://github.com/user-attachments/assets/4322b691-0d74-43b0-bef3-a98f942b3eb0)
+Główny widok przedstawiający harmonogram w postaci kalendarza, który przedstawia nastepne piętnaście dni.
+
+
 ![dodaj_zadanie](https://github.com/user-attachments/assets/1cf961f8-f062-4b58-93ae-8749668c4a71)
 Ekran umożliwiający dodawanie nowych zadań do harmonogramu. Możesz wybrać użytkownika, dzień oraz przypisać szczegóły zadania.
 
