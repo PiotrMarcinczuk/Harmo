@@ -1,0 +1,13 @@
+runtime: nodejs20
+service: server
+env_variables:
+  DB_SOCKET: /cloudsql/symmetric-rune-454911-m9:europe-central2:harmonogrmdb
+  ADMIN: postgres
+  PASSWORD: KDS3zz!9
+  DB_NAME: harmonogram_db
+  DB_HOST: 34.116.177.96
+  DB_PORT: 5432
+  JWT_SECRET: 54d95403c1ada059df612f17f653c7ee437d7fa65a93d47521955e8f34831aa9
+  JWT_SECRET_REFRESH: b870c239c6bea4b3247d45b307a4fce9ac6f6a59ca8cba365040e933a3b25bde
+  ORIGIN: https://symmetric-rune-454911-m9.ey.r.appspot.com
+  PORT: 8080
