@@ -1,7 +1,7 @@
 # Harmonogram App - README
 
 ## Opis aplikacji
-Aplikacja do zarządzania harmonogramami, pozwalająca na tworzenie, edytowanie i zarządzanie zadaniami przypisanymi do określonych dni i użytkowników. Umożliwia również kontrolowanie dostępu użytkowników przez tworzenie ograniczonych kont.
+Aplikacja do zarządzania harmonogramami, pozwalająca na tworzenie, edytowanie i zarządzanie zadaniami przypisanymi do określonych dni i użytkowników. Umożliwia również kontrolowanie dostępu użytkowników przez tworzenie ograniczonych kont. W utworzonej aplikacji do przesyłania danych użytkownika wykorzystany został standard tokenu JWT, który odpowiada ze bezpieczeństwo danych.
 
 ## Funkcjonalności
 
