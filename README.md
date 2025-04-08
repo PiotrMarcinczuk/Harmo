@@ -50,6 +50,44 @@ Ekran umożliwiający dodawanie nowych zadań do harmonogramu. Możesz wybrać u
 Widok szczegółów zadania, gdzie użytkownicy mogą przeglądać informacje dotyczące zadania.
 
 
-## Aplikacja dostępna jest pod:
-https://symmetric-rune-454911-m9.ey.r.appspot.com/
+## Instalacja lokalnie
+
+- Zacznij od sklonowania repozytorium na swoje lokalne środowisko:
+  
+```bash
+git clone https://github.com/PiotrMarcinczuk/Project-1-Harmo.git
+cd Project-1-Harmo/frontend/vite-project
+```
+
+- Instalacja zależności
+```bash
+npm install
+
+cd ../backend/src
+
+npm install dotenv
+
+uzupełnienie pliku .env własnym zmiennymi środowiskowymi
+```
+- Baza danych
+```bash
+psql -h 'localhost' -U 'postgres'
+
+npx sequelize-cli db:migrate
+
+npx sequelize-cli db:seed --seed 20250325124408-demo-users.js
+npx sequelize-cli db:seed --seed 20250325125242-demo-timetables.js
+npx sequelize-cli db:seed --seed 20250325125327-demo-user-t.js 
+npx sequelize-cli db:seed --seed 20250325125300-demo-events.js
+npx sequelize-cli db:seed --seed 20250325132208-demo-new-events.js
+```
+- Właczenie aplikacji
+```bash
+npx ts-node server.ts
+
+cd ../frontend/vite-project
+
+npm run dev
+```
+
 
