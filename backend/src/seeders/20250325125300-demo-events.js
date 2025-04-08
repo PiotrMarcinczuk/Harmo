@@ -5,7 +5,7 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     // Insert Events
     const events = [];
-    for (let i = 1; i <= 20; i++) {
+    for (let i = 1; i <= 10; i++) {
       events.push({
         event_name: "Koszenie trawy",
         start_time: `2025-04-01 ${10 + (i % 4)}:00:00`,
