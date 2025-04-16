@@ -32,6 +32,8 @@ export default function LoginForm() {
   const { loginUser, setUser } = UserAPI();
   const { getTimetables, getTimetableForCollaborator } = TimetableAPI();
   const { userInfo } = useSelector((state: any) => state.auth);
+  const { load } = useSelector((state: any) => state.load);
+
   useEffect(() => {
     const fetchTimetables = async () => {
       if (userInfo) {
@@ -50,7 +52,7 @@ export default function LoginForm() {
       }
     };
     fetchTimetables();
-  }, []);
+  }, [load]);
 
   const handleClickRegister = () => {
     navigate("/register");
