@@ -5,7 +5,7 @@ import TaskBlock from "./TaskBlock";
 import { useParams } from "react-router-dom";
 import useEventPopup from "../hooks/useEventPopup";
 import EventDetails from "./EventDetails";
-import UserAPI from "../api/UserAPI";
+import { useSelector } from "react-redux";
 import UserNavigation from "./UserNavigation";
 import UpcommingEvents from "./UpcommingEvents";
 import useMobileMenu from "../hooks/useMobileMenu";
@@ -16,21 +16,23 @@ export default function MyTask() {
   const { isEventPopup, changeEventPopup } = useEventPopup();
   const { getEventForCurrentUser } = EventsAPI();
   const { timetableId } = useParams();
-  const { getUser } = UserAPI();
+  const { userInfo } = useSelector((state: any) => state.auth);
+  const { load } = useSelector((state: any) => state.load);
   const { isMenuOpen, setIsMenuOpen, xlMenu } = useMobileMenu();
 
   const fetchEventsForCurrentUser = useCallback(async () => {
+    if (load) return;
     try {
       const response = await getEventForCurrentUser(timetableId);
       setEvents(response);
     } catch (error) {
       return error;
     }
-  }, []);
+  }, [load]);
 
   useEffect(() => {
     fetchEventsForCurrentUser();
-  }, [timetableId]);
+  }, [timetableId, load]);
 
   const handleEventClick = useCallback((event: any) => {
     setSelectedEvent(event);
@@ -45,7 +47,7 @@ export default function MyTask() {
           className={`fixed transform z-50 transition-transform duration-300  ${
             isMenuOpen ? "translate-x-0" : "-translate-x-96"
           }`}>
-          {getUser().is_admin ? <AdminNavigation /> : <UserNavigation />}
+          {userInfo.is_admin ? <AdminNavigation /> : <UserNavigation />}
         </div>
         <div className="max-w-1732 flex flex-wrap mx-auto md:justify-center">
           <div

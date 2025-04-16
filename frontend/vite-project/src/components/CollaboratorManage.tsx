@@ -14,6 +14,7 @@ import UpcommingEvents from "./UpcommingEvents";
 import AddCollaborator from "./AddCollaborator";
 import useMobileMenu from "../hooks/useMobileMenu";
 import MenuButton from "./MenuButton";
+import { useSelector } from "react-redux";
 
 const CollaboratorManage = memo(function CollaboratorManage({
   initialComponentType,
@@ -22,12 +23,15 @@ const CollaboratorManage = memo(function CollaboratorManage({
   const [componentType, setComponentType] = useState("");
   const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
   const { timetableId } = useParams();
-  const { getCollaborators, removeUser, getUser } = UserAPI();
+  const { getCollaborators, removeUser } = UserAPI();
   const { collaborator, changeCollaborator } = useCollaborator();
   const { isMenuOpen, setIsMenuOpen, xlMenu, mobileMenu } = useMobileMenu();
+  const { userInfo } = useSelector((state: any) => state.auth);
+  const { load } = useSelector((state: any) => state.load);
+
   const navigate = useNavigate();
   const fetchCollaborators = useCallback(async () => {
-    if (!timetableId) return;
+    if (!timetableId || load) return;
     try {
       const collaboratorsResponse: { data: Collaborator[] } =
         await getCollaborators(parseInt(timetableId));
@@ -35,7 +39,7 @@ const CollaboratorManage = memo(function CollaboratorManage({
     } catch (error) {
       console.error("Error fetching collaborators:", error);
     }
-  }, []);
+  }, [load]);
 
   useEffect(() => {
     fetchCollaborators();
@@ -43,7 +47,7 @@ const CollaboratorManage = memo(function CollaboratorManage({
 
   useEffect(() => {
     setComponentType(initialComponentType);
-  }, [initialComponentType]);
+  }, [initialComponentType, load]);
 
   // const changeComponent = useCallback((componentType: string) => {
   //   setComponentType(componentType);
@@ -58,7 +62,7 @@ const CollaboratorManage = memo(function CollaboratorManage({
   const handleClickPopupConfirm = useCallback(async () => {
     if (!collaborator.user_id) return;
     try {
-      await removeUser(getUser().user_id, collaborator.user_id);
+      await removeUser(userInfo.user_id, collaborator.user_id);
       setIsPopupVisible(false);
       await fetchCollaborators();
     } catch (error) {
@@ -74,7 +78,7 @@ const CollaboratorManage = memo(function CollaboratorManage({
           className={`fixed transform z-50 transition-transform duration-300  ${
             isMenuOpen ? "translate-x-0" : "-translate-x-96"
           }`}>
-          {getUser().is_admin ? <AdminNavigation /> : null}
+          {userInfo.is_admin ? <AdminNavigation /> : null}
         </div>
         <div className="max-w-1920 mx-auto flex flex-wrap">
           <div className="w-full mx-auto rounded mt-10 lg:mt-2">

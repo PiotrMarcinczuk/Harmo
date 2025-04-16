@@ -1,9 +1,9 @@
 import useHttp from "../hooks/useHttp";
-import UserAPI from "./UserAPI";
+import { useSelector } from "react-redux";
 import { type Event } from "../interfaces/app_interfaces";
 export default function EventsAPI() {
   const { http } = useHttp();
-  const { getUser } = UserAPI();
+  const { userInfo } = useSelector((state: any) => state.auth);
 
   const createEvent = async (data: Event) => {
     try {
@@ -26,7 +26,7 @@ export default function EventsAPI() {
 
   const getEvents = async (timetableId: any) => {
     try {
-      const userId = getUser().user_id;
+      const userId = userInfo.user_id;
       const response = await http.get(
         `auth/get-events/?timetableId=${timetableId}&userId=${userId}`
       );
@@ -38,7 +38,7 @@ export default function EventsAPI() {
 
   const getEventsWithoutCalendar = async (timetableId: any) => {
     try {
-      const userId = getUser().user_id;
+      const userId = userInfo.user_id;
       const response = await http.get(
         `auth/admin/get-events-list/?timetableId=${timetableId}&userId=${userId}`
       );
@@ -51,9 +51,7 @@ export default function EventsAPI() {
   const getEventForCurrentUser = async (timetableId: any) => {
     try {
       const response = await http.get(
-        `auth/get-events-user/?timetableId=${timetableId}&userId=${
-          getUser().user_id
-        }`
+        `auth/get-events-user/?timetableId=${timetableId}&userId=${userInfo.user_id}`
       );
       return response.data;
     } catch (error) {
@@ -90,7 +88,7 @@ export default function EventsAPI() {
         ...data,
         startTime: data.eventStartTime,
         endTime: data.eventEndTime,
-        userId: getUser().user_id,
+        userId: userInfo.user_id,
         eventId: data.eventId,
       });
       return response.data;

@@ -1,11 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { type EventValidationData } from "../interfaces/app_interfaces";
 import EventsAPI from "../api/EventsAPI";
-import UserAPI from "../api/UserAPI";
 import { useParams, useNavigate } from "react-router-dom";
 import EventValidation from "../validation/EventValidation";
 import SelectUser from "./SelectUser";
-
+import { useSelector } from "react-redux";
 export default function CreateEvent({
   setComponentType,
   isCreating,
@@ -30,10 +29,10 @@ export default function CreateEvent({
     endTime: false,
   });
   const { createEvent, updateEvent } = EventsAPI();
-  const { getUser } = UserAPI();
   const { validateData } = EventValidation();
   const { timetableId } = useParams();
   const { eventName, startTime, endTime } = validationData;
+  const { userInfo } = useSelector((state: any) => state.auth);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -60,7 +59,7 @@ export default function CreateEvent({
               combinedStartTime.length > 1 ? combinedStartTime : null,
             eventEndTime: combinedEndTime.length > 1 ? combinedEndTime : null,
             timetableId: parseInt(timetableId || "0"),
-            userId: getUser().user_id,
+            userId: userInfo.user_id,
           })
         : await updateEvent({
             ...data,
@@ -68,7 +67,7 @@ export default function CreateEvent({
             eventEndTime: combinedEndTime,
             timetableId: parseInt(timetableId || "0"),
             eventId: tempData.event_id,
-            userId: getUser().user_id,
+            userId: userInfo.user_id,
           });
 
       if (re && (re.event_id || re.message === "Event updated")) {

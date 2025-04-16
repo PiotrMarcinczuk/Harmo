@@ -9,6 +9,8 @@ import FirstTimetable from "./pages/FirstTimetable";
 import "./output.css";
 import SelectTimetable from "./pages/SelectTimetable";
 import RegisteredAccount from "./pages/RegisteredAccount";
+import { Provider } from "react-redux";
+import store from "./store/store";
 
 const router = createBrowserRouter([
   {
@@ -202,4 +204,8 @@ const router = createBrowserRouter([
 
 Modal.setAppElement("#root");
 const root = createRoot(document.getElementById("root")!);
-root.render(<RouterProvider router={router} />);
+root.render(
+  <Provider store={store}>
+    <RouterProvider router={router} />
+  </Provider>
+);

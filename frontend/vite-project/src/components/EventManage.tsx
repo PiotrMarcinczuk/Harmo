@@ -1,7 +1,7 @@
 import AdminNavigation from "./AdminNavigation";
 import EventsAPI from "../api/EventsAPI";
 import EventsList from "./EventsList";
-import UserAPI from "../api/UserAPI";
+import { useSelector } from "react-redux";
 import { useState, useEffect, useCallback, memo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { type Event } from "../interfaces/app_interfaces";
@@ -21,18 +21,19 @@ const EventManage = memo(function EventManage({ initialComponentType }: any) {
   const { getEventsWithoutCalendar, removeEvent } = EventsAPI();
   const [events, setEvents] = useState<Event[]>([]);
   const { event, changeEvent } = useEvent();
-  const { getUser } = UserAPI();
+  const { userInfo } = useSelector((state: any) => state.auth);
+  const { load } = useSelector((state: any) => state.load);
   const { isMenuOpen, setIsMenuOpen, xlMenu } = useMobileMenu();
 
   const fetchEvents = useCallback(async () => {
-    if (!timetableId) return;
+    if (!timetableId || load) return;
     try {
       const response = await getEventsWithoutCalendar(parseInt(timetableId));
       setEvents(response);
     } catch (error) {
       return error;
     }
-  }, []);
+  }, [load]);
 
   useEffect(() => {
     fetchEvents();
@@ -40,7 +41,7 @@ const EventManage = memo(function EventManage({ initialComponentType }: any) {
 
   useEffect(() => {
     setComponentType(initialComponentType);
-  }, [initialComponentType]);
+  }, [initialComponentType, load]);
 
   const handlePopup = useCallback(async () => {
     if (!event) return;
@@ -51,7 +52,7 @@ const EventManage = memo(function EventManage({ initialComponentType }: any) {
   const handleClickPopupConfirm = useCallback(async () => {
     if (!event.event_id) return;
     try {
-      await removeEvent(getUser().user_id, event.event_id);
+      await removeEvent(userInfo.user_id, event.event_id);
       changeEvent(null);
       setIsPopupVisible(false);
       await fetchEvents();
@@ -68,7 +69,7 @@ const EventManage = memo(function EventManage({ initialComponentType }: any) {
           className={`fixed transform z-50 transition-transform duration-300  ${
             isMenuOpen ? "translate-x-0" : "-translate-x-96"
           }`}>
-          {getUser().is_admin ? <AdminNavigation /> : null}
+          {userInfo.is_admin ? <AdminNavigation /> : null}
         </div>
         <div className="max-w-1920 mx-auto flex flex-wrap">
           <div className="w-full mx-auto rounded mt-10">

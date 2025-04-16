@@ -1,36 +1,36 @@
 import { useState, useEffect } from "react";
 import useHttp from "../hooks/useHttp";
-import UserAPI from "../api/UserAPI";
+import { useSelector } from "react-redux";
 import TimetableAPI from "../api/TimetableAPI";
 import { useNavigate, Link } from "react-router-dom";
 
 export default function SelectTimetable() {
   const [timetable, setTimetable] = useState<any[]>([]);
   const { frontUrl } = useHttp();
-  const { getUser } = UserAPI();
+  const { userInfo } = useSelector((state: any) => state.auth);
+  const { load } = useSelector((state: any) => state.load);
   const { getTimetables, getTimetableForCollaborator } = TimetableAPI();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const user = getUser();
     const fetchTimetable = async () => {
-      if (user && user.user_id) {
-        const timetableData = await getTimetables(user.user_id);
+      if (userInfo && userInfo.user_id) {
+        const timetableData = await getTimetables(userInfo.user_id);
         setTimetable(timetableData);
       }
     };
     const fetchCollaboratorTimetables = async () => {
-      if (user && user.user_id) {
-        const timetables = await getTimetableForCollaborator(getUser().user_id);
+      if (userInfo && userInfo.user_id) {
+        const timetables = await getTimetableForCollaborator(userInfo.user_id);
         setTimetable(timetables);
       }
     };
-    if (user.is_admin) {
+    if (userInfo.is_admin) {
       fetchTimetable();
     } else {
       fetchCollaboratorTimetables();
     }
-  }, []);
+  }, [load]);
 
   const handleClickButton = (timetableId: number) => {
     navigate(`/plan/${timetableId}`);
@@ -38,7 +38,7 @@ export default function SelectTimetable() {
 
   return (
     <section className="max-w-1732 mx-auto mt-10">
-      {getUser().is_admin && (
+      {userInfo.is_admin && (
         <div
           className="bg-red-200 max-w-[500px] p-4 mx-auto flex justify-center text-nowrap
         ">

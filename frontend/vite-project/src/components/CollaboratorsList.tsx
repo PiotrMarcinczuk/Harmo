@@ -1,7 +1,6 @@
 import { useState, memo } from "react";
 import { type Collaborator } from "../interfaces/app_interfaces";
-import UserAPI from "../api/UserAPI";
-
+import { useSelector } from "react-redux";
 const CollaboratorsList = memo(function CollaboratorsList({
   collaborators,
   onSelectCollaborator,
@@ -13,7 +12,7 @@ const CollaboratorsList = memo(function CollaboratorsList({
     number | null
   >(null);
 
-  const { getUser } = UserAPI();
+  const { userInfo } = useSelector((state: any) => state.auth);
 
   const changeColor = (collaborator: any) => {
     const id = collaborator.user_id;
@@ -30,7 +29,7 @@ const CollaboratorsList = memo(function CollaboratorsList({
     <div className="mx-auto w-full min-h-screen md:w-2/3 xl:w-1/2">
       {collaborators.map((collaborator) => {
         return (
-          collaborator.user_id !== getUser().user_id && (
+          collaborator.user_id !== userInfo.user_id && (
             <div
               onClick={() => changeColor(collaborator)}
               className={`px-4 my-2 hover:cursor-pointer ${

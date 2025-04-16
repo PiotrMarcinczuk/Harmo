@@ -3,11 +3,11 @@ import TimetableAPI from "../api/TimetableAPI";
 import UserAPI from "../api/UserAPI";
 import { useNavigate } from "react-router-dom";
 import type { ChangeEvent, FormEvent } from "react";
-
+import { useSelector } from "react-redux";
 export default function FirstTimetable({ firstFlag }: any) {
   const [name, setName] = useState("");
   const { createTimeatable, getTimetables } = TimetableAPI();
-  const { getUser } = UserAPI();
+  const { userInfo } = useSelector((state: any) => state.auth);
   const navigate = useNavigate();
 
   const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
@@ -26,7 +26,7 @@ export default function FirstTimetable({ firstFlag }: any) {
 
   useEffect(() => {
     const fetchTimetables = async () => {
-      const timetables = await getTimetables(getUser().user_id);
+      const timetables = await getTimetables(userInfo.user_id);
       if (timetables.length > 0 && firstFlag) {
         navigate("/wybor-plan");
       }

@@ -1,6 +1,5 @@
 import AdminNavigation from "../components/AdminNavigation";
 import EventsAPI from "../api/EventsAPI";
-import UserAPI from "../api/UserAPI";
 import EventDetails from "../components/EventDetails";
 import useEventPopup from "../hooks/useEventPopup";
 import useDayPopup from "../hooks/useDayPopup";
@@ -12,7 +11,7 @@ import DayDetails from "./DayDetails";
 import UserNavigation from "./UserNavigation";
 import MenuButton from "./MenuButton";
 import useMobileMenu from "../hooks/useMobileMenu";
-
+import { useSelector } from "react-redux";
 export default function CalendarMain() {
   const [calendarPages, setCalendarPages] = useState<any>([]);
   const [currentFifteenDays, setCurrentFifteenDays] = useState<any[]>([]);
@@ -21,17 +20,18 @@ export default function CalendarMain() {
   const { isEventPopup, changeEventPopup } = useEventPopup();
   const { isDayPopup, changeDayPopup } = useDayPopup();
   const { getEvents } = EventsAPI();
-  const { getUser } = UserAPI();
   const { timetableId } = useParams();
   const [buttonVisibility, setButtonVisibility] = useState<any>({
     prevButton: true,
     nextButton: true,
   });
   const { isMenuOpen, setIsMenuOpen } = useMobileMenu();
+  const { userInfo } = useSelector((state: any) => state.auth);
+  const { load } = useSelector((state: any) => state.load);
 
   useEffect(() => {
-    fetchEvents();
-  }, []);
+    if (!load) fetchEvents();
+  }, [load]);
 
   const fetchEvents = useCallback(async () => {
     try {
@@ -40,7 +40,7 @@ export default function CalendarMain() {
     } catch (error) {
       return error;
     }
-  }, []);
+  }, [load]);
 
   useEffect(() => {
     if (!calendarPages) {
@@ -50,7 +50,7 @@ export default function CalendarMain() {
       const currentDate = new Date();
       changeCurrentFifteenDays(currentDate);
     }
-  }, [calendarPages]);
+  }, [calendarPages, load]);
 
   const changeCurrentFifteenDays = useCallback(
     (currentDate: Date) => {
@@ -173,7 +173,7 @@ export default function CalendarMain() {
           className={`fixed transform z-50 transition-transform duration-300  ${
             isMenuOpen ? "translate-x-0" : "-translate-x-96"
           }`}>
-          {getUser().is_admin ? <AdminNavigation /> : <UserNavigation />}
+          {userInfo.is_admin ? <AdminNavigation /> : <UserNavigation />}
         </div>
         <div className="relative max-w-1920 mx-auto pt-8 2xl:pt-4 h-full">
           <div className="flex flex-wrap pb-36 md:pb-0 md:mr-2 xl:mr-8">
@@ -184,7 +184,7 @@ export default function CalendarMain() {
                   let isUserHasTasks = false;
                   if (page.userIds) {
                     page.userIds.forEach((userId: number) => {
-                      if (getUser().user_id === userId) {
+                      if (userInfo.user_id === userId) {
                         isUserHasTasks = true;
                       }
                     });

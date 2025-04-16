@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import EventsAPI from "../api/EventsAPI";
-import UserAPI from "../api/UserAPI";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import TaskBlock from "./TaskBlock";
 import useEventPopup from "../hooks/useEventPopup";
@@ -8,22 +8,23 @@ import EventDetails from "./EventDetails";
 
 export default function UpcommingEvents() {
   const { getUpcomingEvents } = EventsAPI();
-  const { getUser } = UserAPI();
   const { timetableId } = useParams();
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const { isEventPopup, changeEventPopup } = useEventPopup();
+  const { userInfo } = useSelector((state: any) => state.auth);
+  const { load } = useSelector((state: any) => state.load);
 
   useEffect(() => {
     const fetchEvents = async () => {
       const events = await getUpcomingEvents(
-        getUser().user_id,
+        userInfo.user_id,
         Number(timetableId)
       );
       setEvents(events);
     };
-    fetchEvents();
-  }, []);
+    if (!load) fetchEvents();
+  }, [load]);
 
   const handleEventClick = useCallback((event: any) => {
     setSelectedEvent(event);

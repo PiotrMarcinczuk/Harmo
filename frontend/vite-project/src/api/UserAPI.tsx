@@ -2,11 +2,21 @@ import { LoginData, RegisterData } from "../interfaces/app_interfaces";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import useHttp from "../hooks/useHttp";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setUserInfo,
+  setUserToken,
+  clearUserInfo,
+  setUserRefreshToken,
+} from "../counter/authSlice";
+
 export default function UserAPI() {
   const [cookies, setCookie] = useCookies(["currentUser"]);
   const { http, axiosInstance } = useHttp();
   const navigate = useNavigate();
   const { timetableId } = useParams();
+  const { userInfo } = useSelector((state: any) => state.auth);
+  const dispatch = useDispatch();
 
   const registerUser = async (data: RegisterData) => {
     try {
@@ -58,15 +68,15 @@ export default function UserAPI() {
   };
 
   const getUser = () => {
-    if (cookies["currentUser"]) return cookies["currentUser"];
+    if (cookies["currentUser"]) {
+      dispatch(setUserInfo(cookies["currentUser"]));
+    }
   };
 
   const getCollaborators = async (timetableId: number): Promise<any> => {
     try {
       const response = await http.get(
-        `auth/get-collaborators/?timetableId=${timetableId}&userId=${
-          getUser().user_id
-        }`
+        `auth/get-collaborators/?timetableId=${timetableId}&userId=${userInfo.user_id}`
       );
 
       return response;
@@ -78,9 +88,7 @@ export default function UserAPI() {
   const getCollaboratorsForEvent = async (eventId: number) => {
     try {
       const response = await http.get(
-        `auth/get-collaborators-for-event/?eventId=${eventId}&userId=${
-          getUser().user_id
-        }&timetableId=${timetableId}`
+        `auth/get-collaborators-for-event/?eventId=${eventId}&userId=${userInfo.user_id}&timetableId=${timetableId}`
       );
       return response.data;
     } catch (error) {
@@ -94,6 +102,9 @@ export default function UserAPI() {
         email: data.email,
         password: data.password,
       });
+      dispatch(setUserInfo(response.data.user));
+      dispatch(setUserToken(response.data.accessToken));
+      dispatch(setUserRefreshToken(response.data.refreshToken));
       return response.data;
     } catch (error) {
       console.error("Error logging in user:", error);
@@ -104,10 +115,14 @@ export default function UserAPI() {
   const logout = async () => {
     try {
       const response = await http.post(`auth/logout`, {
-        userId: getUser().user_id,
+        userId: userInfo.user_id,
       });
-      console.log(response);
-      if (response) navigate("/");
+
+      if (response) {
+        dispatch(clearUserInfo());
+        setCookie("currentUser", null);
+        navigate("/");
+      }
     } catch (error) {
       console.error("Error logging out user:", error);
       alert("Wystąpił błąd podczas wylogowywania");
@@ -135,7 +150,7 @@ export default function UserAPI() {
     try {
       const response = await http.patch(`auth/update-user`, {
         ...data,
-        userId: getUser().user_id,
+        userId: userInfo.user_id,
         assignedUserId: data.assignedUserId,
       });
 
@@ -150,8 +165,8 @@ export default function UserAPI() {
     try {
       const response = await http.patch(`auth/update-user`, {
         ...data,
-        userId: getUser().user_id,
-        assignedUserId: getUser().user_id,
+        userId: userInfo.user_id,
+        assignedUserId: userInfo.user_id,
       });
       return response;
     } catch (error) {
@@ -163,9 +178,7 @@ export default function UserAPI() {
   const getUserById = async (targetUserId: number) => {
     try {
       const response = await http.get(
-        `auth/admin/get-user-by-id/?userId=${
-          getUser().user_id
-        }&targetUserId=${targetUserId}`
+        `auth/admin/get-user-by-id/?userId=${userInfo.user_id}&targetUserId=${targetUserId}`
       );
       return response;
     } catch (error) {
@@ -176,7 +189,7 @@ export default function UserAPI() {
   const addColaborator = async (email: string, timetableId: number) => {
     try {
       const response = await http.post(`auth/admin/add-user-to-timetable`, {
-        userId: getUser().user_id,
+        userId: userInfo.user_id,
         timetableId: timetableId,
         email: email,
       });

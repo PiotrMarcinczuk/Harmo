@@ -9,6 +9,7 @@ import type {
 import UserAPI from "../api/UserAPI";
 import TimetableAPI from "../api/TimetableAPI";
 import LoginValidation from "../validation/LoginValidation";
+import { useSelector } from "react-redux";
 
 export default function LoginForm() {
   const [data, setData] = useState<LoginData>({
@@ -28,17 +29,17 @@ export default function LoginForm() {
     setData({ ...data, [e.target.name]: e.target.value });
   };
 
-  const { loginUser, getUser, setUser } = UserAPI();
+  const { loginUser, setUser } = UserAPI();
   const { getTimetables, getTimetableForCollaborator } = TimetableAPI();
+  const { userInfo } = useSelector((state: any) => state.auth);
   useEffect(() => {
-    const user = getUser();
     const fetchTimetables = async () => {
-      if (user) {
+      if (userInfo) {
         try {
-          const response = await getTimetables(user.user_id);
+          const response = await getTimetables(userInfo.user_id);
           if (response.data || response[0].timetable_id) {
             navigate("/wybor-plan");
-          } else if (user.is_admin) {
+          } else if (userInfo.is_admin) {
             navigate("/pierwszy-plan");
           } else {
             navigate("/");

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, memo } from "react";
+import { useSelector } from "react-redux";
 import {
   RegisterValidationData,
   type RegisterData,
@@ -46,9 +47,10 @@ const RegisterCollaborator = memo(function RegisterCollaborator({
     repeatPassword,
   } = validationData;
 
-  const { getUser, registerCollaborator, updateUser } = UserAPI();
+  const { registerCollaborator, updateUser } = UserAPI();
   const { validateData } = RegisterValidation();
   const { timetableId } = useParams();
+  const { userInfo } = useSelector((state: any) => state.auth);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -71,7 +73,7 @@ const RegisterCollaborator = memo(function RegisterCollaborator({
         ? await registerCollaborator({
             ...data,
             timetableId: parseInt(timetableId || ""),
-            userId: getUser().user_id,
+            userId: userInfo.user_id,
           })
         : await updateUser({
             ...data,
@@ -80,7 +82,7 @@ const RegisterCollaborator = memo(function RegisterCollaborator({
               data.repeatPassword !== "" ? data.repeatPassword : undefined,
             timetableId: parseInt(timetableId || "0"),
             assignedUserId: data.assignedUserId,
-            userId: getUser().user_id,
+            userId: userInfo.user_id,
           });
 
       if (re && typeof re === "object" && "data" in re) {

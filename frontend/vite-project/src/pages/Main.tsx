@@ -4,6 +4,7 @@ import EventManage from "../components/EventManage";
 import MyTask from "../components/MyTask";
 import MyAccount from "../components/MyAccount";
 import Help from "../pages/Help";
+
 export default function Main({ componentType }: { componentType: string }) {
   if (componentType === "CalendarMain") return <CalendarMain />;
   if (componentType === "CollaboratorManage")

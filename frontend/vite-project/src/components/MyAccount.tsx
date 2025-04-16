@@ -7,25 +7,26 @@ import { type RegisterValidationData } from "../interfaces/app_interfaces";
 import MenuButton from "./MenuButton";
 import useMobileMenu from "../hooks/useMobileMenu";
 import UserNavigation from "./UserNavigation";
-
+import { useSelector } from "react-redux";
 export default function MyAccount() {
   const [data, setData] = useState<any>([]);
   const [initialData, setInitialData] = useState<any>([]);
   const passwordRef = useRef<HTMLInputElement>(null);
   const repeatPasswordRef = useRef<HTMLInputElement>(null);
-  const { getUser, updateYourself, setUser } = UserAPI();
+  const { updateYourself, setUser } = UserAPI();
   const { validateData } = RegisterValidation();
   const { timetableId } = useParams();
   const navigate = useNavigate();
   const { isMenuOpen, setIsMenuOpen } = useMobileMenu();
+  const { userInfo } = useSelector((state: any) => state.auth);
+  const { load } = useSelector((state: any) => state.load);
   useEffect(() => {
     const fetchData = async () => {
-      const user = getUser();
-      setData(user);
-      setInitialData(user);
+      setData(userInfo);
+      setInitialData(userInfo);
     };
     fetchData();
-  }, []);
+  }, [load]);
 
   const [validationData, setValidationData] = useState<RegisterValidationData>({
     name: false,
@@ -62,8 +63,8 @@ export default function MyAccount() {
         repeatPassword:
           data.repeatPassword !== "" ? data.repeatPassword : undefined,
         timetableId: parseInt(timetableId || "0"),
-        assignedUserId: getUser().user_id,
-        userId: getUser().user_id,
+        assignedUserId: userInfo.user_id,
+        userId: userInfo.user_id,
       });
 
       if (re && typeof re === "object" && "data" in re) {
@@ -114,7 +115,7 @@ export default function MyAccount() {
           className={`fixed transform z-50 transition-transform duration-300  ${
             isMenuOpen ? "translate-x-0" : "-translate-x-96"
           }`}>
-          {getUser().is_admin ? <AdminNavigation /> : <UserNavigation />}
+          {userInfo.is_admin ? <AdminNavigation /> : <UserNavigation />}
         </div>
         <div className="max-w-1920 flex justify-center mx-auto flex-wrap">
           <div className="px-2 xs:w-3/4 lg:w-1/2 mt-10">

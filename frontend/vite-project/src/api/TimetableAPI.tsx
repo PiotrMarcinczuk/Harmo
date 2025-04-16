@@ -1,14 +1,14 @@
 import useHttp from "../hooks/useHttp";
-import UserAPI from "./UserAPI";
+import { useSelector } from "react-redux";
 export default function TimetableAPI() {
   const { http } = useHttp();
-  const { getUser } = UserAPI();
+  const { userInfo } = useSelector((state: any) => state.auth);
 
   const createTimeatable = async (name: string) => {
     try {
       const response = await http.post(`auth/admin/create-timetable`, {
         name: name,
-        userId: getUser().user_id,
+        userId: userInfo.user_id,
       });
       return response.data;
     } catch (error) {
